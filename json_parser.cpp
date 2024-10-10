@@ -219,7 +219,7 @@ std::string _to_string(JsonObject json_object, int tab_index){
         case JsonValueType::DICT: {
             result += "{\n"s;
             bool first = true;
-            for (auto [key, value] : json_object.get_dict()){
+            for (auto [key, value] : json_object.get_dict_by_ref()){
                 if (first){
                     first = false;
                 } else {
@@ -239,7 +239,7 @@ std::string _to_string(JsonObject json_object, int tab_index){
         case JsonValueType::LIST: {
             result += "[\n"s;
             bool first = true;
-            for (auto i : json_object.get_list()){
+            for (auto i : json_object.get_list_by_ref()){
                 if (first){
                     first = false;
                 } else {
@@ -275,6 +275,32 @@ std::string to_string(bool value){
         return "true"s;
     }
     return "false"s;
+}
+
+
+bool operator==(const JsonObject& lhs, const JsonObject& rhs){
+    if (lhs.get_value_type() != rhs.get_value_type()){
+        return false;
+    }
+    switch (lhs.get_value_type())
+    {
+        case JsonValueType::BOOL:
+            return lhs._bool_value == rhs._bool_value;
+        case JsonValueType::DOUBLE:
+            return lhs._double_value == rhs._double_value;
+        case JsonValueType::INT:
+            return lhs._int_value == rhs._int_value;
+        case JsonValueType::STRING:
+            return lhs._string_value == rhs._string_value;
+        case JsonValueType::NULL_VALUE:
+            return true;
+        case JsonValueType::LIST:
+            return lhs._list_value == rhs._list_value;
+        case JsonValueType::DICT:
+            return lhs._dict_value == rhs._dict_value;
+        default:
+            throw JsonValueTypeErrorException("неизвестный тип в bool operator==(const JsonObject& lhs, const JsonObject& rhs)");
+    }
 }
 
 }

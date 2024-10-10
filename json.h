@@ -67,6 +67,7 @@ std::string to_string(JsonValueType value_type);
 
 class JsonObject{
     friend JsonObject parse_json(const std::string& json_str);
+    friend bool operator==(const JsonObject& lhs, const JsonObject& rhs);
 public:
     JsonObject();
     JsonObject(int64_t value);
@@ -77,17 +78,22 @@ public:
     JsonObject(const char* value);
     JsonObject(const JsonList& value);
     JsonObject(const JsonDict& value);
+    JsonObject(nullptr_t value);
     JsonObject& operator=(int64_t value);
+    JsonObject& operator=(int value);
     JsonObject& operator=(double value);
     JsonObject& operator=(bool value);
-    JsonObject& operator=(std::string value);
+    JsonObject& operator=(const std::string& value);
+    JsonObject& operator=(const char* value);
     JsonObject& operator=(const JsonList& value);
     JsonObject& operator=(const JsonDict& value);
     JsonObject& operator=(nullptr_t value);
     void set_int(int64_t value);
+    void set_int(int value);
     void set_double(double value);
     void set_bool(bool value);
     void set_string(const std::string& value);
+    void set_string(const char* value);
     void set_list(const JsonList& value);
     void set_dict(const JsonDict& value);
     void set_null();
@@ -95,8 +101,10 @@ public:
     double get_double();
     bool get_bool();
     std::string get_string();
-    JsonList& get_list();
-    JsonDict& get_dict();
+    JsonList& get_list_by_ref();
+    JsonDict& get_dict_by_ref();
+    const JsonList& get_list();
+    const JsonDict& get_dict();
     JsonObject& operator[](const std::string& key);
     JsonObject& operator[](int64_t index);
     JsonValueType get_value_type() const;
@@ -109,6 +117,8 @@ private:
     JsonDict _dict_value;
     bool _bool_value;
 };
+
+bool operator==(const JsonObject& lhs, const JsonObject& rhs);
 
 JsonObject parse_json(const std::string& json_str);
 std::string to_string(JsonObject json_object);

@@ -69,6 +69,10 @@ JsonObject::JsonObject(bool value){
 }
 
 
+JsonObject::JsonObject(nullptr_t value){
+    set_null();
+}
+
 JsonObject& JsonObject::operator[](const std::string& key){
     if (_value_type != JsonValueType::DICT){
         throw JsonValueTypeErrorException("ожидался элемент типа 'словарь', но "s + to_string(_value_type));
@@ -97,12 +101,23 @@ JsonObject& JsonObject::operator=(int64_t value){
     return *this;
 }
 
+JsonObject& JsonObject::operator=(int value){
+    set_int(value);
+    return *this;
+}
+
 JsonObject& JsonObject::operator=(double value){
     set_double(value);
     return *this;
 }
 
-JsonObject& JsonObject::operator=(std::string value){
+JsonObject& JsonObject::operator=(const std::string& value){
+    set_string(value);
+    return *this;
+}
+
+
+JsonObject& JsonObject::operator=(const char* value){
     set_string(value);
     return *this;
 }
@@ -150,18 +165,27 @@ std::string JsonObject::get_string(){
     return _string_value;
 }
 
-JsonList& JsonObject::get_list(){
+JsonList& JsonObject::get_list_by_ref(){
     if (_value_type != JsonValueType::LIST){
         throw JsonValueTypeErrorException("ожидался элемент типа 'лист', но "s + to_string(_value_type));
     }
     return _list_value;
 }
 
-JsonDict& JsonObject::get_dict(){
+JsonDict& JsonObject::get_dict_by_ref(){
     if (_value_type != JsonValueType::DICT){
         throw JsonValueTypeErrorException("ожидался элемент типа 'словарь', но "s + to_string(_value_type));
     }
     return _dict_value;
+}
+
+
+const JsonList& JsonObject::get_list(){
+    return get_list_by_ref();
+}
+
+const JsonDict& JsonObject::get_dict(){
+    return get_dict_by_ref();
 }
 
 bool JsonObject::get_bool(){
@@ -176,12 +200,23 @@ void JsonObject::set_int(int64_t value){
     _int_value = value;
 }
 
+void JsonObject::set_int(int value){
+    _value_type = JsonValueType::INT;
+    _int_value = value;
+}
+
 void JsonObject::set_double(double value){
     _value_type = JsonValueType::DOUBLE;
     _double_value = value;
 }
 
 void JsonObject::set_string(const std::string& value){
+    _value_type = JsonValueType::STRING;
+    _string_value = value;
+}
+
+
+void JsonObject::set_string(const char* value){
     _value_type = JsonValueType::STRING;
     _string_value = value;
 }

@@ -1,7 +1,9 @@
-test: json_object.o json_parser.o
-	g++ test.cpp -o test_app json_object.o json_parser.o
-manual_test: json_object.o json_parser.o
-	g++ manual_test.cpp -o manual_test_app json_object.o json_parser.o
+test_with_python: json_object.o json_parser.o
+	g++ test/test_with_python.cpp -o test/test_with_python json_object.o json_parser.o
+
+cpp_test: json_object.o json_parser.o
+	g++ test/cpp_test.cpp -o test/cpp_test json_object.o json_parser.o
+
 json_object.o: json.h json_object.cpp
 	g++ json_object.cpp -o json_object.o -c
 json_parser.o: json.h json_parser.cpp
@@ -9,5 +11,5 @@ json_parser.o: json.h json_parser.cpp
 	
 
 clean:
-	-rm test_app manual_test_app
+	-rm test/test_with_python test/cpp_test
 	-rm *.o
