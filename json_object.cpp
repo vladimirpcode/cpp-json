@@ -29,6 +29,32 @@ JsonObject::JsonObject()
 
 }
 
+
+JsonObject::JsonObject(int64_t value){
+    set_int(value);
+}
+
+JsonObject::JsonObject(int value){
+    set_int(value);
+}
+
+JsonObject::JsonObject(double value){
+    set_double(value);
+}
+
+JsonObject::JsonObject(const std::string value){
+    set_string(value);
+}
+
+JsonObject::JsonObject(const JsonDict& value){
+    set_dict(value);
+}
+
+JsonObject::JsonObject(const JsonList& value){
+    set_list(value);
+}
+
+
 JsonObject& JsonObject::operator[](const std::string& key){
     if (_value_type != JsonValueType::DICT){
         throw JsonValueTypeErrorException("ожидался элемент типа 'словарь', но "s + to_string(_value_type));

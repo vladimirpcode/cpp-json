@@ -67,6 +67,12 @@ class JsonObject{
     friend JsonObject parse_json(const std::string& json_str);
 public:
     JsonObject();
+    JsonObject(int64_t value);
+    JsonObject(int value);
+    JsonObject(double value);
+    JsonObject(const std::string value);
+    JsonObject(const JsonDict& value);
+    JsonObject(const JsonList& value);
     JsonObject& operator[](const std::string& key);
     JsonObject& operator[](int64_t index);
     JsonObject& operator=(int64_t value);
