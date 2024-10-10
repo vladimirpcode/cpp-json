@@ -59,6 +59,8 @@ enum class JsonValueType{
     STRING,
     LIST,
     DICT,
+    BOOL,
+    NULL_VALUE
 };
 
 std::string to_string(JsonValueType value_type);
@@ -70,26 +72,33 @@ public:
     JsonObject(int64_t value);
     JsonObject(int value);
     JsonObject(double value);
-    JsonObject(const std::string value);
-    JsonObject(const JsonDict& value);
+    JsonObject(bool value);
+    JsonObject(const std::string& value);
+    JsonObject(const char* value);
     JsonObject(const JsonList& value);
-    JsonObject& operator[](const std::string& key);
-    JsonObject& operator[](int64_t index);
+    JsonObject(const JsonDict& value);
     JsonObject& operator=(int64_t value);
     JsonObject& operator=(double value);
+    JsonObject& operator=(bool value);
     JsonObject& operator=(std::string value);
     JsonObject& operator=(const JsonList& value);
     JsonObject& operator=(const JsonDict& value);
-    int64_t get_int();
-    double get_double();
-    std::string get_string();
-    JsonList& get_list();
-    JsonDict& get_dict();
+    JsonObject& operator=(nullptr_t value);
     void set_int(int64_t value);
     void set_double(double value);
+    void set_bool(bool value);
     void set_string(const std::string& value);
     void set_list(const JsonList& value);
     void set_dict(const JsonDict& value);
+    void set_null();
+    int64_t get_int();
+    double get_double();
+    bool get_bool();
+    std::string get_string();
+    JsonList& get_list();
+    JsonDict& get_dict();
+    JsonObject& operator[](const std::string& key);
+    JsonObject& operator[](int64_t index);
     JsonValueType get_value_type() const;
 private:
     JsonValueType _value_type;
@@ -98,9 +107,11 @@ private:
     std::string _string_value;
     JsonList _list_value;
     JsonDict _dict_value;
+    bool _bool_value;
 };
 
 JsonObject parse_json(const std::string& json_str);
 std::string to_string(JsonObject json_object);
+std::string to_string(bool value);
 
 } 

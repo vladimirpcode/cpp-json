@@ -56,6 +56,8 @@ JsonObject parse_dict(ParsingWrapper& wrap);
 JsonObject parse_list(ParsingWrapper& wrap);
 std::string parse_string(ParsingWrapper& wrap);
 JsonObject parse_number(ParsingWrapper& wrap);
+JsonObject parse_bool(ParsingWrapper& wrap);
+JsonObject parse_null(ParsingWrapper& wrap);
 
 JsonObject parse_json(const std::string& json_str){
     ParsingWrapper wrap(json_str);
@@ -77,6 +79,12 @@ JsonObject parse_value(ParsingWrapper& wrap){
     }
     if (wrap.ch == '{'){
         return parse_dict(wrap);
+    }
+    if (wrap.ch == 'f' || wrap.ch == 't'){
+        return parse_bool(wrap);
+    }
+    if (wrap.ch == 'n'){
+        return parse_null(wrap);
     }
     throw JsonParsingErrorException("Ожидалось число, строка, словарь или массив. Но встречен символ '"s + wrap.ch + "'"s);
 }
@@ -165,6 +173,37 @@ JsonObject parse_number(ParsingWrapper& wrap){
     return obj;
 }
 
+void check_keyword(ParsingWrapper& wrap, const std::string& keyword){
+    std::string current_str = ""s;
+    for (char c : keyword){
+        current_str += wrap.ch;
+        if ((wrap.ch) != c){
+            throw JsonParsingErrorException("ожидалось "s + keyword + " но "s + current_str);
+        }
+        wrap.get_next();
+    }
+}
+
+JsonObject parse_bool(ParsingWrapper& wrap){
+    if (wrap.ch == 'f'){
+        check_keyword(wrap, "false"s);
+        return JsonObject("false"s);
+    }
+    if (wrap.ch == 't'){
+        check_keyword(wrap, "true"s);
+        return JsonObject("true"s);
+    }
+    throw JsonParsingErrorException("Ожидалось булево значение");
+}
+
+JsonObject parse_null(ParsingWrapper& wrap){
+    if (wrap.ch == 'n'){
+        check_keyword(wrap, "null"s);
+        return JsonObject("null"s);
+    }
+    throw JsonParsingErrorException("Ожидалось null-значение");
+}
+
 std::string make_tab(int tab_index){
     std::string result = ""s;
     for (int i = 0; i < tab_index; ++i){
@@ -216,6 +255,10 @@ std::string _to_string(JsonObject json_object, int tab_index){
             result += "\""s + json_object.get_string() + "\""s;
             return result;
         }
+        case JsonValueType::BOOL:
+            return to_string(json_object.get_bool());
+        case JsonValueType::NULL_VALUE:
+            return "null"s;
         default:
             return "<error>";
 
@@ -227,5 +270,11 @@ std::string to_string(JsonObject json_object){
     return _to_string(json_object, 0);
 }
 
+std::string to_string(bool value){
+    if (value){
+        return "true"s;
+    }
+    return "false"s;
+}
 
 }

@@ -19,6 +19,10 @@ std::string to_string(JsonValueType value_type){
             return "массив"s;
         case JsonValueType::STRING:
             return "строка"s;
+        case JsonValueType::BOOL:
+            return "булев тип";
+        case JsonValueType::NULL_VALUE:
+            return "null-значение";
     }
     return "неизвестный тип"s;
 }
@@ -42,7 +46,12 @@ JsonObject::JsonObject(double value){
     set_double(value);
 }
 
-JsonObject::JsonObject(const std::string value){
+JsonObject::JsonObject(const std::string& value){
+    set_string(value);
+}
+
+
+JsonObject::JsonObject(const char* value){
     set_string(value);
 }
 
@@ -52,6 +61,11 @@ JsonObject::JsonObject(const JsonDict& value){
 
 JsonObject::JsonObject(const JsonList& value){
     set_list(value);
+}
+
+
+JsonObject::JsonObject(bool value){
+    set_bool(value);
 }
 
 
@@ -103,6 +117,18 @@ JsonObject& JsonObject::operator=(const JsonDict& value){
     return *this;
 }
 
+
+JsonObject& JsonObject::operator=(bool value){
+    set_bool(value);
+    return *this;
+}
+
+
+JsonObject& JsonObject::operator=(nullptr_t value){
+    set_null();
+    return *this;
+}
+
 int64_t JsonObject::get_int(){
     if (_value_type != JsonValueType::INT){
         throw JsonValueTypeErrorException("ожидался элемент типа 'целое число', но "s + to_string(_value_type));
@@ -138,6 +164,12 @@ JsonDict& JsonObject::get_dict(){
     return _dict_value;
 }
 
+bool JsonObject::get_bool(){
+    if (_value_type != JsonValueType::BOOL){
+        throw JsonValueTypeErrorException("ожидался элемент типа 'булев тип', но "s + to_string(_value_type));
+    }
+    return _bool_value;
+}
 
 void JsonObject::set_int(int64_t value){
     _value_type = JsonValueType::INT;
@@ -164,6 +196,15 @@ void JsonObject::set_dict(const JsonDict& value){
     _dict_value = value;
 }
 
+
+void JsonObject::set_bool(bool value){
+    _value_type = JsonValueType::BOOL;
+    _bool_value = value;
+}
+
+void JsonObject::set_null(){
+    _value_type = JsonValueType::NULL_VALUE;
+}
 
 JsonValueType JsonObject::get_value_type() const{
     return _value_type;
