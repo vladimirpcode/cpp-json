@@ -2,7 +2,11 @@
 
 Пример использования. Словарям и спискам лучше указывать тип вручную (как в примере) и не полагаться на вывод типов. Т.е. не {...}, а JsonDict{...}
 
-
+Работа осуществляется через объекты типа JsonObject и функции 
+```cpp
+JsonObject parse_json(const std::string& json_str);
+std::string to_string(JsonObject json_object);
+```
 
 ```cpp
 #include "json.h"
@@ -31,5 +35,36 @@ int main(){
     for (auto& i : dict["a"]["d"]["m"].get_list()){
         std::cout << "foreach: " << i.get_int() << "\n";
     }
+
+    std::cout << "\n\n\n";
+    std::cout << to_string(JsonObject(dict)) << "\n";
+```
+
+Вывод:
+
+```
+целое число
+21
+foreach: 1
+foreach: 21
+foreach: 3
+
+
+
+{
+   "a": {
+      "b": 1,
+      "c": 2,
+      "d": {
+         "e": 251,
+         "m": [
+            1,
+            21,
+            3
+         ]
+      }
+   },
+   "age": 34,
+   "name": "Max"
 }
 ```

@@ -24,4 +24,7 @@ int main(){
     for (auto& i : dict["a"]["d"]["m"].get_list()){
         std::cout << "foreach: " << i.get_int() << "\n";
     }
+
+    std::cout << "\n\n\n";
+    std::cout << to_string(JsonObject(dict)) << "\n";
 }
