@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <string>
+#include <iostream>
 
 using namespace std::string_literals;
 
@@ -132,12 +133,59 @@ JsonObject parse_list(ParsingWrapper& wrap){
     return obj;
 }
 
+std::string parse_four_hex_digits(ParsingWrapper& wrap){
+    char hex_coded_symbol[3];
+    hex_coded_symbol[0] = (char)(-27);
+    for (int i = 1; i < 3; ++i){
+        uint8_t one_byte[2];
+        for (int k = 0; k < 2; ++k){
+            if (is_number(wrap.ch)){
+                one_byte[k] = wrap.ch - '0';
+            } else if (wrap.ch >= 'a' && wrap.ch <= 'f'){
+                one_byte[k] = wrap.ch - 'a' + 10;
+            } else if (wrap.ch >= 'A' && wrap.ch <= 'F'){
+                one_byte[k] = wrap.ch - 'A' + 10;
+            } else {
+                throw JsonParsingErrorException("Ожидалось 4 значеное HEX представление символа");
+            }
+            wrap.get_next();
+        }
+        hex_coded_symbol[i] = (char)(one_byte[0] * 16 + one_byte[1]);
+    }
+    char uni[4] = "哈";
+    for (int i = 0; i < 4; ++i){
+        std::cout << "DEBUG UTF-8: " << (int)(uni[i]) << "\n"; 
+    }
+    std::cout << "DEBUG: " << (int)(hex_coded_symbol[1]) << " - " << (int)(hex_coded_symbol[2]) << "\n";
+    std::cout << "DEBUG: " << std::string(hex_coded_symbol) << "\n";
+    return std::string(hex_coded_symbol);
+}
+
 std::string parse_string(ParsingWrapper& wrap){
     wrap.check('"');
     std::string str = "";
     while (wrap.ch != EOT && wrap.ch != '"'){
-        str += wrap.ch;
-        wrap.get_next();
+        if (wrap.ch == '\\'){
+            wrap.get_next();
+            switch (wrap.ch){
+                case '"': str += '"'; break;
+                case '\\': str += '\\'; break;
+                case '/': str += '/'; break;
+                case 'b': str += '\b'; break;
+                case 'f': str += '\f'; break;
+                case 'n': str += '\n'; break;
+                case 'r': str += '\r'; break;
+                case 't': str += '\t'; break;
+                case 'u': {
+                    wrap.get_next();
+                    str += parse_four_hex_digits(wrap);
+                    break;
+                }
+            }
+        } else {
+            str += wrap.ch;
+            wrap.get_next();
+        }
     }
     wrap.check('"');
     return str;

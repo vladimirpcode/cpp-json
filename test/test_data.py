@@ -29,5 +29,8 @@ json_objects = [
                 "level": 2,
             }
         ]
+    },
+    {
+        "hex": "\u54С8"
     }
 ]
